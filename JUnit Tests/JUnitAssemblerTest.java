@@ -6,6 +6,7 @@ import org.junit.Test;
  * @author Kevin Meltzer
  * @version 1.6
  */
+// TESTS MUST BE RUN SEPARATELY FOR ACCURATE RESULTS
 public class JUnitAssemblerTest { 
 
     // Creates an instance of Processor that will be used for testing
