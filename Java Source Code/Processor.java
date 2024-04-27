@@ -1,12 +1,12 @@
 /*
  * Represents the Processor which executes assembly commands
  * @author Kevin Meltzer
- * @version 1.5
+ * @version 1.7
  */
 public class Processor {                                        
 
     // An array of words representing the registers
-    private Word registers[]; 
+    private Word[] registers; 
     // Word representing a program counter
     private Word PC;
     // Word representing a stack pointer
@@ -39,6 +39,9 @@ public class Processor {
     // Bits used to set the value of other bits inside of the word
     private Bit trueBit = new Bit(true);     
     private Bit falseBit = new Bit(false); 
+
+    // Int to count the number of clock cycles
+    public static int currentClockCycle = 0;
 
     /** 
      * @param i Index of desired register
@@ -89,13 +92,14 @@ public class Processor {
             execute();
             store();
         }
+        System.out.println("Clock cycles: " + currentClockCycle);
     }
 
     /**
      * Fetchs an instruction from memory and then increments the program counter
      */
     public void fetch() {
-        currentInstruction.copy(MainMemory.read(PC));
+        currentInstruction.copy(InstructionCache.read(PC));
         PC.increment();
     }
     
@@ -185,7 +189,6 @@ public class Processor {
     public void store() throws Exception {
         if (halted.getValue()) {
             System.out.println("HALT");
-            return;
         } else if (opcode.getBit(27).or(opcode.getBit(28)).or(opcode.getBit(29)).not().getValue()) {            // Math - 000
             if (getRegisterInt(rd) != 0) {              // Ensures r0 always reads as 0 and cannot be overwritten
                 registers[getRegisterInt(rd)].copy(executionResult); 
@@ -207,7 +210,7 @@ public class Processor {
             printResultsCall();
         } else if (opcode.getBit(27).not().and(opcode.getBit(28)).and(opcode.getBit(29)).getValue()) {          // Push - 011
             SP.decrement();
-            MainMemory.write(SP, executionResult);
+            L2Cache.write(SP, executionResult);
             printResultsPush();
         } else if (opcode.getBit(27).and(opcode.getBit(28).not()).and(opcode.getBit(29).not()).getValue()) {    // Load - 100
             if (opcode.getBit(30).or(opcode.getBit(31)).not().getValue()) { // 0R - 00
@@ -222,11 +225,11 @@ public class Processor {
                 throw new Exception("Invalid Store at PC = " + oldPC + " Can only store in addresses 0-1023");
             }
             if (opcode.getBit(30).not().getValue()) {                                  // 1R - 01
-                MainMemory.write(executionResult, immediate);
+                L2Cache.write(executionResult, immediate);
             } else if (opcode.getBit(31).getValue()) {                                 // 2R - 11
-                MainMemory.write(executionResult, rs1);
+                L2Cache.write(executionResult, rs1);
             } else {                                                                     // 3R - 10
-                MainMemory.write(executionResult, rs2);
+                L2Cache.write(executionResult, rs2);
             }
             printResultsStore();
         } else {                                                                                                      // Pop/Peek - 110
@@ -260,12 +263,14 @@ public class Processor {
         if (opcode.getBit(31).getValue()) {                                 // 2R - 11
             alu.op1.copy(rdData);
             alu.op2.copy(rs1);
-            alu.doOperation(new Bit[]{function.getBit(28),function.getBit(29),function.getBit(30),function.getBit(31)});
+            alu.doOperation(new Bit[]{function.getBit(28),function.getBit(29),function.getBit(30),function.getBit(31)});    // Preforms math operation
+            aluClockAdd();
             executionResult.copy(alu.result);
         } else {                                                                    // 3R - 10
             alu.op1.copy(rs1);                              
             alu.op2.copy(rs2);
-            alu.doOperation(new Bit[]{function.getBit(28),function.getBit(29),function.getBit(30),function.getBit(31)});
+            alu.doOperation(new Bit[]{function.getBit(28),function.getBit(29),function.getBit(30),function.getBit(31)});    // Preforms math operation
+            aluClockAdd();
             executionResult.copy(alu.result);
         }
     }
@@ -282,6 +287,7 @@ public class Processor {
             alu.op1.copy(PC);                              
             alu.op2.copy(immediate);
             alu.doOperation(new Bit[]{trueBit,trueBit,trueBit,falseBit});   // Adds PC and immediate value
+            currentClockCycle += 2;
             executionResult.copy(alu.result);
             return;
         } 
@@ -296,10 +302,12 @@ public class Processor {
             alu.op1.copy(rs1);                              
             alu.op2.copy(rdData);
             alu.doOperation(new Bit[]{function.getBit(28),function.getBit(29),function.getBit(30),function.getBit(31)});   // Preforms boolean operation
+            currentClockCycle += 2;
             if (alu.result.getBit(31).getValue()) {
                 alu.op1.copy(PC);                              
                 alu.op2.copy(immediate);
                 alu.doOperation(new Bit[]{trueBit,trueBit,trueBit,falseBit});   // Adds PC and immediate value
+                currentClockCycle += 2;
                 executionResult.copy(alu.result);
             } else {
                 executionResult.copy(PC);
@@ -308,10 +316,12 @@ public class Processor {
             alu.op1.copy(rs1);                              
             alu.op2.copy(rs2);
             alu.doOperation(new Bit[]{function.getBit(28),function.getBit(29),function.getBit(30),function.getBit(31)});   // Preforms boolean operation
+            currentClockCycle += 2;
             if (alu.result.getBit(31).getValue()) {
                 alu.op1.copy(PC);                              
                 alu.op2.copy(immediate);
                 alu.doOperation(new Bit[]{trueBit,trueBit,trueBit,falseBit});   // Adds PC and immediate value
+                currentClockCycle += 2;
                 executionResult.copy(alu.result);
             } else {
                 executionResult.copy(PC);
@@ -326,15 +336,16 @@ public class Processor {
     private void executeCall() throws Exception {
         if (opcode.getBit(30).or(opcode.getBit(31)).not().getValue()) {         // 0R - 00
             SP.decrement();
-            MainMemory.write(SP, PC);
+            L2Cache.write(SP, PC);
             executionResult.copy(immediate);
             return;
         } else if (opcode.getBit(30).not().getValue()) {                          // 1R - 01
             SP.decrement();
-            MainMemory.write(SP, PC);
+            L2Cache.write(SP, PC);
             alu.op1.copy(rdData);                              
             alu.op2.copy(immediate);
             alu.doOperation(new Bit[]{trueBit,trueBit,trueBit,falseBit});   // Adds rd and immediate value
+            currentClockCycle += 2;
             executionResult.copy(alu.result);
             return;
         } 
@@ -349,13 +360,15 @@ public class Processor {
             alu.op1.copy(rs1);                              
             alu.op2.copy(rdData);
             alu.doOperation(new Bit[]{function.getBit(28),function.getBit(29),function.getBit(30),function.getBit(31)});   // Preforms boolean operation
+            currentClockCycle += 2;
             if (alu.result.getBit(31).getValue()) {
                 SP.decrement();
-                MainMemory.write(SP, PC);  
+                L2Cache.write(SP, PC);  
                 PC.decrement();                                             
                 alu.op1.copy(PC);                              
                 alu.op2.copy(immediate);
                 alu.doOperation(new Bit[]{trueBit,trueBit,trueBit,falseBit});   // Adds PC and immediate value
+                currentClockCycle += 2;
                 executionResult.copy(alu.result);
             } else {
                 executionResult.copy(PC);   
@@ -364,12 +377,14 @@ public class Processor {
             alu.op1.copy(rs1);                              
             alu.op2.copy(rs2);
             alu.doOperation(new Bit[]{function.getBit(28),function.getBit(29),function.getBit(30),function.getBit(31)});   // Preforms boolean operation
+            currentClockCycle += 2;
             if (alu.result.getBit(31).getValue()) {
                 SP.decrement();
-                MainMemory.write(SP, PC);
+                L2Cache.write(SP, PC);
                 alu.op1.copy(rdData);                              
                 alu.op2.copy(immediate);
                 alu.doOperation(new Bit[]{trueBit,trueBit,trueBit,falseBit});   // Adds rd and immediate value
+                currentClockCycle += 2;
                 executionResult.copy(alu.result);
             } else {
                 executionResult.copy(PC);
@@ -396,17 +411,20 @@ public class Processor {
         if (opcode.getBit(30).not().getValue()) {                                  // 1R - 01
             alu.op1.copy(rdData);                              
             alu.op2.copy(immediate);
-            alu.doOperation(new Bit[]{function.getBit(28),function.getBit(29),function.getBit(30),function.getBit(31)});   // Preforms boolean operation
+            alu.doOperation(new Bit[]{function.getBit(28),function.getBit(29),function.getBit(30),function.getBit(31)});   // Preforms math operation
+            aluClockAdd();
             executionResult.copy(alu.result);
         } else if (opcode.getBit(31).getValue()) {                           // 2R - 11
             alu.op1.copy(rdData);                              
             alu.op2.copy(rs1);
-            alu.doOperation(new Bit[]{function.getBit(28),function.getBit(29),function.getBit(30),function.getBit(31)});   // Preforms boolean operation
+            alu.doOperation(new Bit[]{function.getBit(28),function.getBit(29),function.getBit(30),function.getBit(31)});   // Preforms math operation
+            aluClockAdd();
             executionResult.copy(alu.result);
         } else {                                                                     // 3R - 10
             alu.op1.copy(rs1);                              
             alu.op2.copy(rs2);
-            alu.doOperation(new Bit[]{function.getBit(28),function.getBit(29),function.getBit(30),function.getBit(31)});   // Preforms boolean operation
+            alu.doOperation(new Bit[]{function.getBit(28),function.getBit(29),function.getBit(30),function.getBit(31)});   // Preforms math operation
+            aluClockAdd();
             executionResult.copy(alu.result);
         }
     }
@@ -417,23 +435,26 @@ public class Processor {
      */
     private void executeLoad() throws Exception {
         if (opcode.getBit(30).or(opcode.getBit(31)).not().getValue()) {          // 0R - 00
-            executionResult.copy(MainMemory.read(SP));
+            executionResult.copy(L2Cache.read(SP));
             SP.increment();
         } else if (opcode.getBit(30).not().getValue()) {                           // 1R - 01
             alu.op1.copy(rdData);                              
             alu.op2.copy(immediate);
             alu.doOperation(new Bit[]{trueBit,trueBit,trueBit,falseBit});   // Adds rd and immediate value   
-            executionResult.copy(MainMemory.read(alu.result));
+            currentClockCycle += 2;
+            executionResult.copy(L2Cache.read(alu.result));
         } else if (opcode.getBit(31).getValue()) {                           // 2R - 11
             alu.op1.copy(rs1);                              
             alu.op2.copy(immediate);
             alu.doOperation(new Bit[]{trueBit,trueBit,trueBit,falseBit});   // Adds rs1 and immediate value   
-            executionResult.copy(MainMemory.read(alu.result));
+            currentClockCycle += 2;
+            executionResult.copy(L2Cache.read(alu.result));
         } else {                                                                     // 3R - 10
             alu.op1.copy(rs1);                              
             alu.op2.copy(rs2);
             alu.doOperation(new Bit[]{trueBit,trueBit,trueBit,falseBit});   // Adds rs1 and rs2 
-            executionResult.copy(MainMemory.read(alu.result));
+            currentClockCycle += 2;
+            executionResult.copy(L2Cache.read(alu.result));
         }
     }
 
@@ -450,12 +471,14 @@ public class Processor {
         } else if (opcode.getBit(31).getValue()) {                           // 2R - 11
             alu.op1.copy(rdData);                              
             alu.op2.copy(immediate);
-            alu.doOperation(new Bit[]{trueBit,trueBit,trueBit,falseBit});   // Adds rd and immediate value  
+            alu.doOperation(new Bit[]{trueBit,trueBit,trueBit,falseBit});   // Adds rd and immediate value 
+            currentClockCycle += 2; 
             executionResult.copy(alu.result);
         } else {                                                                     // 3R - 10
             alu.op1.copy(rdData);                              
             alu.op2.copy(rs1);
             alu.doOperation(new Bit[]{trueBit,trueBit,trueBit,falseBit});   // Adds rd and rs1
+            currentClockCycle += 2;
             executionResult.copy(alu.result);
         }
     }
@@ -469,24 +492,29 @@ public class Processor {
             long oldPC = PC.getUnsigned()-1;
             throw new Exception("Invalid opcode at PC = " + oldPC);
         } else if (opcode.getBit(30).not().getValue()) {                           // 1R - 01
-            executionResult.copy(MainMemory.read(SP));
+            executionResult.copy(L2Cache.read(SP));
             SP.increment();
         } else if (opcode.getBit(31).getValue()) {                           // 2R - 11
             alu.op1.copy(rs1);                              
             alu.op2.copy(immediate);
             alu.doOperation(new Bit[]{trueBit,trueBit,trueBit,falseBit});   // Adds rs1 and immediate value 
+            currentClockCycle += 2;
             alu.op1.copy(SP);
             alu.op2.copy(alu.result);
             alu.doOperation(new Bit[]{trueBit,trueBit,trueBit,trueBit});   // Subtracts SP – (rs1 + immediate value) 
-            executionResult.copy(MainMemory.read(alu.result));
+            currentClockCycle += 2;
+            executionResult.copy(L2Cache.read(alu.result));
+
         } else {                                                                     // 3R - 10
             alu.op1.copy(rs1);                              
             alu.op2.copy(rs2);
             alu.doOperation(new Bit[]{trueBit,trueBit,trueBit,falseBit});   // Adds rs1 and rs2
+            currentClockCycle += 2;
             alu.op1.copy(SP);
             alu.op2.copy(alu.result);
             alu.doOperation(new Bit[]{trueBit,trueBit,trueBit,trueBit});   // Subtracts SP – (rs1 + rs2) 
-            executionResult.copy(MainMemory.read(alu.result));
+            currentClockCycle += 2;
+            executionResult.copy(L2Cache.read(alu.result));
         }
     }
 
@@ -505,6 +533,17 @@ public class Processor {
             x++;
         }
         return sum;
+    }
+
+    /** 
+     * Adds cycles to clock depending on alu operation
+     */
+    private void aluClockAdd() {
+        if (function.getBit(28).not().and(function.getBit(29)).and(function.getBit(30)).and(function.getBit(31)).getValue()) { 
+            currentClockCycle += 10;        // If function is multiply, add 10 to clock,
+        } else {                            // else add 2 to the clock
+            currentClockCycle += 2;
+        }
     }
 
     /** 
@@ -571,19 +610,19 @@ public class Processor {
         } else if (opcode.getBit(31).getValue()) {                           // 2R - 11
             if (alu.result.getSigned() != 0) {
                 System.out.println("CALL" + op + "R" + getRegisterInt(currentInstruction.rightShift(14).and(mask)) + " R" + rd.getUnsigned() + " " + immediate.getSigned()
-                + "    inputs: " + rs1.getSigned() + ", " + rdData.getSigned() + ", " + immediate.getSigned() + " outputs: mem[" + SP.getUnsigned() + "] = " + MainMemory.read(SP).getSigned() + ", PC = " + PC.getUnsigned());
+                    + "    inputs: " + rs1.getSigned() + ", " + rdData.getSigned() + ", " + immediate.getSigned() + " outputs: mem[" + SP.getUnsigned() + "] = " + MainMemory.read(SP).getSigned() + ", PC = " + PC.getUnsigned());
             } else {
                 System.out.println("CALL" + op + "R" + getRegisterInt(currentInstruction.rightShift(14).and(mask)) + " R" + rd.getUnsigned() + " " + immediate.getSigned()
-                + "    inputs: " + rs1.getSigned() + ", " + rdData.getSigned() + ", " + immediate.getSigned() + " output: PC = " + PC.getUnsigned());
+                    + "    inputs: " + rs1.getSigned() + ", " + rdData.getSigned() + ", " + immediate.getSigned() + " output: PC = " + PC.getUnsigned());
             }
         } else {    
             if (alu.result.getSigned() != 0) {                                       // 3R - 10
                 System.out.println("CALL" + op + "R" + getRegisterInt(currentInstruction.rightShift(19).and(mask)) + " R" + getRegisterInt(currentInstruction.rightShift(14).and(mask)) + " R" + rd.getUnsigned() + " " + immediate.getSigned()
-                + "    inputs: " + rs1.getSigned() + ", " + rs2.getSigned() + ", " + rdData.getSigned() + ", " + immediate.getSigned() + " outputs: mem[" + SP.getUnsigned() + "] = " + MainMemory.read(SP).getSigned() + ", PC = " + PC.getUnsigned());
+                    + "    inputs: " + rs1.getSigned() + ", " + rs2.getSigned() + ", " + rdData.getSigned() + ", " + immediate.getSigned() + " outputs: mem[" + SP.getUnsigned() + "] = " + MainMemory.read(SP).getSigned() + ", PC = " + PC.getUnsigned());
             } else {
                 System.out.println("CALL" + op + "R" + getRegisterInt(currentInstruction.rightShift(19).and(mask)) + " R" + getRegisterInt(currentInstruction.rightShift(14).and(mask)) + " R" + rd.getUnsigned() + " " + immediate.getSigned()
-                + "    inputs: " + rs1.getSigned() + ", " + rs2.getSigned() + ", " + rdData.getSigned() + ", " + immediate.getSigned() + " output: PC = " + PC.getUnsigned());
-                }
+                    + "    inputs: " + rs1.getSigned() + ", " + rs2.getSigned() + ", " + rdData.getSigned() + ", " + immediate.getSigned() + " output: PC = " + PC.getUnsigned());
+            }
         }                                                                 
     }
 

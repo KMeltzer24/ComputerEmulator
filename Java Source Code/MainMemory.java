@@ -9,7 +9,7 @@ import java.nio.file.Paths;
 public class MainMemory {                                                       
     
     // An array of words which represents the main memory
-    private static Word[] mainMem = new Word[1024];
+    public static Word[] mainMem = new Word[1024];
     
     /** 
      * Reads a word from main memory array and returns the result as a new word
@@ -44,7 +44,7 @@ public class MainMemory {
      * @param data An array of strings containing 0's and 1's which will be converted to words and inserted into main memory
      * @throws Exception 
      */
-    public static void load(String[] data) throws Exception {                                                                
+    public static void load(String[] data) throws Exception {      
         int index = 0;
         for (String str : data) {
             if (str.length() != 32) {

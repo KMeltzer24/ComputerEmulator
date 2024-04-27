@@ -304,7 +304,7 @@ public class Assembler {
             return params[0] + "0000" + params[1] + "10001";
         } else if (peek(1).getState().equals(Token.state.valueOf("NUMBER"))) {  // 2R - 11
             params = twoR(1);
-            return params[1] + params[0] + "0000" + params[2] + "10010";
+            return params[1] + params[0] + "0000" + params[2] + "10011";
         } else {                                                                   // 3R - 10
             params = threeR(0);
             return "00000000" + params[0] + params[1] + "0000" + params[2] + "10010";
