@@ -1,3 +1,5 @@
+package com.ComputerEmulator;
+
 /**
  * A token object which has a enum state and a value which holds a number represented as a string
  * @author Kevin Meltzer
@@ -86,6 +88,7 @@ public class Token {
 	 * Outputs the value of the token in a string
 	 * @output The value of the token in a string
 	 */
+	@Override
 	public String toString() {
 		if (this.state == state.NUMBER || this.state == state.REGISTER ) {
 			return state + "(" + value + ")";

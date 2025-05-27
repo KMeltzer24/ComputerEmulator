@@ -1,3 +1,5 @@
+package com.ComputerEmulator;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -6,13 +8,14 @@ import org.junit.Test;
  * @author Kevin Meltzer
  * @version 1.5
  */
+@SuppressWarnings("MisorderedAssertEqualsArguments")
 public class JUnitALUTest {
 
     // Creates an instance of ALU that will be used for testing
-    private ALU testALU = new ALU();
+    private final ALU testALU = new ALU();
     // True and false bits used for testing
-    private Bit trueBit = new Bit(true);
-    private Bit falseBit = new Bit(false);
+    private final Bit trueBit = new Bit(true);
+    private final Bit falseBit = new Bit(false);
     
     // Tests 1000 – and
     @Test

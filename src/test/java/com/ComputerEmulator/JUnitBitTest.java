@@ -1,3 +1,5 @@
+package com.ComputerEmulator;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -18,13 +20,13 @@ public class JUnitBitTest {
     public void JUnitBitSetValueTrueTest(){                 
         testBit = new Bit();
         testBit.set(true);
-        Assert.assertEquals(testBit.getValue(),true);
+        Assert.assertTrue(testBit.getValue());
     }
     @Test
     public void JUnitBitSetValueFalseTest(){
         testBit = new Bit();
         testBit.set(false);
-        Assert.assertEquals(testBit.getValue(),false);
+        Assert.assertFalse(testBit.getValue());
     }
 
 
@@ -33,13 +35,13 @@ public class JUnitBitTest {
     public void JUnitBitToggleTrueTest(){
         testBit = new Bit(true);
         testBit.toggle();
-        Assert.assertEquals(testBit.getValue(),false);
+        Assert.assertFalse(testBit.getValue());
     }
     @Test
     public void JUnitBitToggleFalseTest(){
         testBit = new Bit(false);
         testBit.toggle();
-        Assert.assertEquals(testBit.getValue(),true);
+        Assert.assertTrue(testBit.getValue());
     }
 
 
@@ -48,19 +50,19 @@ public class JUnitBitTest {
     public void JUnitBitSetTest(){
         testBit = new Bit();
         testBit.set();
-        Assert.assertEquals(testBit.getValue(),true);
+        Assert.assertTrue(testBit.getValue());
     }
     @Test
     public void JUnitBitSetTrueTest(){
         testBit = new Bit(true);
         testBit.set();
-        Assert.assertEquals(testBit.getValue(),true);
+        Assert.assertTrue(testBit.getValue());
     }
     @Test
     public void JUnitBitSetFalseTest(){
         testBit = new Bit(false);
         testBit.set();
-        Assert.assertEquals(testBit.getValue(),true);
+        Assert.assertTrue(testBit.getValue());
     }
 
 
@@ -69,19 +71,19 @@ public class JUnitBitTest {
     public void JUnitBitClearTest(){
         testBit = new Bit();
         testBit.clear();
-        Assert.assertEquals(testBit.getValue(),false);
+        Assert.assertFalse(testBit.getValue());
     }
     @Test
     public void JUnitBitClearTrueTest(){
         testBit = new Bit(true);
         testBit.clear();
-        Assert.assertEquals(testBit.getValue(),false);
+        Assert.assertFalse(testBit.getValue());
     }
     @Test
     public void JUnitBitClearFalseTest(){
         testBit = new Bit(false);
         testBit.clear();
-        Assert.assertEquals(testBit.getValue(),false);
+        Assert.assertFalse(testBit.getValue());
     }   
 
 
@@ -89,12 +91,12 @@ public class JUnitBitTest {
     @Test
     public void JUnitBitGetValueTrueTest(){
         testBit = new Bit(true);
-        Assert.assertEquals(testBit.getValue(),true);
+        Assert.assertTrue(testBit.getValue());
     }
     @Test
     public void JUnitBitGetValueFalseTest(){
         testBit = new Bit(false);
-        Assert.assertEquals(testBit.getValue(),false);
+        Assert.assertFalse(testBit.getValue());
     }
 
 
@@ -103,25 +105,25 @@ public class JUnitBitTest {
     public void JUnitBitAndTrueTest(){
         testBit1 = new Bit(true);
         testBit2 = new Bit(true);
-        Assert.assertEquals(testBit1.and(testBit2).getValue(),true);
+        Assert.assertTrue(testBit1.and(testBit2).getValue());
     }
     @Test
     public void JUnitBitAndFalseTest(){
         testBit1 = new Bit(false);
         testBit2 = new Bit(false);
-        Assert.assertEquals(testBit1.and(testBit2).getValue(),false);
+        Assert.assertFalse(testBit1.and(testBit2).getValue());
     }
     @Test
     public void JUnitBitAndMix1Test(){
         testBit1 = new Bit(true);
         testBit2 = new Bit(false);
-        Assert.assertEquals(testBit1.and(testBit2).getValue(),false);
+        Assert.assertFalse(testBit1.and(testBit2).getValue());
     }
     @Test
     public void JUnitBitAndMix2Test(){
         testBit1 = new Bit(false);
         testBit2 = new Bit(true);
-        Assert.assertEquals(testBit1.and(testBit2).getValue(),false);
+        Assert.assertFalse(testBit1.and(testBit2).getValue());
     }
 
 
@@ -130,25 +132,25 @@ public class JUnitBitTest {
     public void JUnitBitOrTrueTest(){
         testBit1 = new Bit(true);
         testBit2 = new Bit(true);
-        Assert.assertEquals(testBit1.or(testBit2).getValue(),true);
+        Assert.assertTrue(testBit1.or(testBit2).getValue());
     }
     @Test
     public void JUnitBitOrFalseTest(){
         testBit1 = new Bit(false);
         testBit2 = new Bit(false);
-        Assert.assertEquals(testBit1.or(testBit2).getValue(),false);
+        Assert.assertFalse(testBit1.or(testBit2).getValue());
     }
     @Test
     public void JUnitBitOrMix1Test(){
         testBit1 = new Bit(true);
         testBit2 = new Bit(false);
-        Assert.assertEquals(testBit1.or(testBit2).getValue(),true);
+        Assert.assertTrue(testBit1.or(testBit2).getValue());
     }
     @Test
     public void JUnitBitOrMix2Test(){
         testBit1 = new Bit(false);
         testBit2 = new Bit(true);
-        Assert.assertEquals(testBit1.or(testBit2).getValue(),true);
+        Assert.assertTrue(testBit1.or(testBit2).getValue());
     }
 
 
@@ -157,25 +159,25 @@ public class JUnitBitTest {
     public void JUnitBitXorTrueTest(){
         testBit1 = new Bit(true);
         testBit2 = new Bit(true);
-        Assert.assertEquals(testBit1.xor(testBit2).getValue(),false);
+        Assert.assertFalse(testBit1.xor(testBit2).getValue());
     }
     @Test
     public void JUnitBitXorFalseTest(){
         testBit1 = new Bit(false);
         testBit2 = new Bit(false);
-        Assert.assertEquals(testBit1.xor(testBit2).getValue(),false);
+        Assert.assertFalse(testBit1.xor(testBit2).getValue());
     }
     @Test
     public void JUnitBitXorMix1Test(){
         testBit1 = new Bit(true);
         testBit2 = new Bit(false);
-        Assert.assertEquals(testBit1.xor(testBit2).getValue(),true);
+        Assert.assertTrue(testBit1.xor(testBit2).getValue());
     }
     @Test
     public void JUnitBitXorMix2Test(){
         testBit1 = new Bit(false);
         testBit2 = new Bit(true);
-        Assert.assertEquals(testBit1.xor(testBit2).getValue(),true);
+        Assert.assertTrue(testBit1.xor(testBit2).getValue());
     }
 
 
@@ -183,12 +185,12 @@ public class JUnitBitTest {
     @Test
     public void JUnitBitNotTrueTest(){
         testBit = new Bit(true);
-        Assert.assertEquals(testBit.not().getValue(),false);
+        Assert.assertFalse(testBit.not().getValue());
     }
     @Test
     public void JUnitBitNotFalseTest(){
         testBit = new Bit(false);
-        Assert.assertEquals(testBit.not().getValue(),true);
+        Assert.assertTrue(testBit.not().getValue());
     }
 
 
@@ -196,11 +198,11 @@ public class JUnitBitTest {
     @Test
     public void JUnitToStringTrueTest(){
         testBit = new Bit(true);
-        Assert.assertEquals(testBit.toString(),"t");
+        Assert.assertEquals("t",testBit.toString());
     }
     @Test
     public void JUnitToStringFalseTest(){
         testBit = new Bit(false);
-        Assert.assertEquals(testBit.toString(),"f");
+        Assert.assertEquals("f",testBit.toString());
     }
 }

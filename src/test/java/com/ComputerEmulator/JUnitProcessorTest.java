@@ -1,3 +1,5 @@
+package com.ComputerEmulator;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -7,10 +9,11 @@ import org.junit.Test;
  * @version 1.5
  */
 // TESTS MUST BE RUN SEPARATELY FOR ACCURATE RESULTS
+@SuppressWarnings("MisorderedAssertEqualsArguments")
 public class JUnitProcessorTest {
 
     // Creates an instance of Processor that will be used for testing
-    private Processor testProcessor = new Processor();
+    private final Processor testProcessor = new Processor();
     
     // Tests run (MUST BE RAN INDIVIDUALLY TO SEE PRINTED RESULTS ACCURATELY)
     @Test   

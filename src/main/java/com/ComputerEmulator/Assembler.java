@@ -1,5 +1,8 @@
+package com.ComputerEmulator;
+
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -30,14 +33,14 @@ public class Assembler {
         File input = new File(args[0]);
         File output = new File(args[1]);
         
-        ArrayList<String> instructions = new ArrayList<String>();
+        ArrayList<String> instructions = new ArrayList<>();
 		try {		
-			instructions = new ArrayList<String>(Files.readAllLines(input.toPath()));
-		} catch (Exception e) {											
+			instructions = new ArrayList<>(Files.readAllLines(input.toPath()));
+		} catch (IOException e) {											
 		    throw new Exception("Error reading input file: " + e.getMessage());
 		}
         // If the input file is empty, throws an empty file exception
-		if(instructions.size() == 0) {
+		if(instructions.isEmpty()) {
 			throw new Exception("Empty file inputed");
 		}
 
@@ -49,12 +52,12 @@ public class Assembler {
         // Writes parse result output file
         try {
             FileWriter fileWriter = new FileWriter(output);
-            PrintWriter printWriter = new PrintWriter(fileWriter);
-            for (int i = 0; i <parseResult.size(); i++) {
-                printWriter.println(parseResult.get(i));
+            try (PrintWriter printWriter = new PrintWriter(fileWriter)) {
+                for (int i = 0; i <parseResult.size(); i++) {
+                    printWriter.println(parseResult.get(i));
+                }
             }
-            printWriter.close();
-		} catch (Exception e) {											
+		} catch (IOException e) {											
 		    throw new Exception("Error writing to output file: " + e);
 		}
     }
@@ -64,10 +67,10 @@ public class Assembler {
      * @param instructions List of Assembly instructions
      */
     private void lex(ArrayList<String> instructions) throws Exception {
-        tokens = new ArrayList<Token>();      
+        tokens = new ArrayList<>();      
         for (int line = 0; line < instructions.size(); line++) {
             // Initializes a ArrayList which will filled with tokens 
-            ArrayList<Token> tokList = new ArrayList<Token>();
+            ArrayList<Token> tokList = new ArrayList<>();
             // Splits the input string into a array character by character
             String str = instructions.get(line);
             String[] arr = str.split("");
@@ -161,13 +164,13 @@ public class Assembler {
      * @throws Exception 
      */
     private ArrayList<String> statements() throws Exception {
-        ArrayList<String> statments = new ArrayList<String>();
+        ArrayList<String> statments = new ArrayList<>();
         // Remove all NewLine tokens until a not NewLine token is found
         removeNewLines();
         while (true) {
             statments.add(statement());
             matchRemoveNullTest("NEWLINE");
-            if (tokens.size() == 0) {
+            if (tokens.isEmpty()) {
                 break;
             }
         }
@@ -180,16 +183,16 @@ public class Assembler {
      * @throws Exception 
      */
     private String statement() throws Exception {
-        HashMap<String,String> mathList = new HashMap<String,String>();
+        HashMap<String,String> mathList = new HashMap<>();
         mathList.put("MULT", "0111");mathList.put("AND", "1000");mathList.put("OR", "1001");mathList.put("XOR", "1010");mathList.put("NOT", "1011");
         mathList.put("LSHIFT", "1100");mathList.put("RSHIFT", "1101");mathList.put("ADD", "1110");mathList.put("SUB", "1111");
-        HashMap<String,String> branchList = new HashMap<String,String>();
+        HashMap<String,String> branchList = new HashMap<>();
         branchList.put("BRANCHEQ", "0000");branchList.put("BRANCHNEQ", "0001");branchList.put("BRANCHLT", "0010");
 		branchList.put("BRANCHGE", "0011");branchList.put("BRANCHGT", "0100");branchList.put("BRANCHLE", "0101");
-        HashMap<String,String> callList = new HashMap<String,String>();
+        HashMap<String,String> callList = new HashMap<>();
         callList.put("CALL", "");callList.put("CALLEQ", "0000");callList.put("CALLNEQ", "0001");callList.put("CALLLT", "0010");
 		callList.put("CALLGE", "0011");callList.put("CALLHGT", "0100");callList.put("CALLLE", "0101");
-        HashMap<String,String> pushList = new HashMap<String,String>();
+        HashMap<String,String> pushList = new HashMap<>();
         pushList.put("PUSHMULT", "0111");pushList.put("PUSHAND", "1000");pushList.put("PUSHOR", "1001");pushList.put("PUSHXOR", "1010");pushList.put("PUSHNOT", "1011");
         pushList.put("PUSHLSHIFT", "1100");pushList.put("PUSHRSHIFT", "1101");pushList.put("PUSHADD", "1110");pushList.put("PUSHSUB", "1111");
 
@@ -562,6 +565,7 @@ public class Assembler {
 	/**
 	 * Removes a newline token and checks for empty lines in the file
 	 */
+    @SuppressWarnings("empty-statement")
 	private void removeNewLines() {
 		while (!(matchAndRemove("NEWLINE") == null));
 	}

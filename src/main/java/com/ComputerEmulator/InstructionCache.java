@@ -1,3 +1,5 @@
+package com.ComputerEmulator;
+
 /* 
  * Represents a Instruction Cache 
  * @author Kevin Meltzer
@@ -5,7 +7,7 @@
  */
 public class InstructionCache {
     // An array of words representing a cache
-    private static Word[] cache = new Word[8];
+    private static final Word[] cache = new Word[8];
     // Word representing the address of first item in cache 
     private static Word firstAddress;
 

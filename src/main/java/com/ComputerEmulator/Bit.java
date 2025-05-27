@@ -1,3 +1,5 @@
+package com.ComputerEmulator;
+
 /*
  * Represents a bit which can be true or false
  * @author Kevin Meltzer
@@ -35,11 +37,7 @@ public class Bit {
      * Changes the value from true to false or false to true
      */
     public void toggle() {
-        if (this.value) {
-            this.value = false;
-        } else {
-            this.value = true;
-        }
+        this.value = !this.value;
     }
 
     /** 
@@ -127,6 +125,7 @@ public class Bit {
      * Returns “t” if the value is true or “f” if the value is false
      * @return “t” or “f” corresponding to value of the bit
      */
+    @Override
     public String toString() {
         if (this.value) { 
             return "t";

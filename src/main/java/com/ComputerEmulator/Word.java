@@ -1,16 +1,18 @@
+package com.ComputerEmulator;
+
 /*
  * Represents a word which holds an array of 32 bits
  * @author Kevin Meltzer
  * @version 1.5
  */
-public class Word {             
+public final class Word {             
     
     // An array which holds 32 bits
     private Bit[] bits = new Bit[32];
 
     // Bits used to set the value of other bits inside of the word
-    private Bit trueBit = new Bit(true);     
-    private Bit falseBit = new Bit(false); 
+    private final Bit trueBit = new Bit(true);     
+    private final Bit falseBit = new Bit(false); 
 
     /** 
      * Constructor for Word that sets each bit to false
@@ -151,6 +153,7 @@ public class Word {
      * Returns a comma separated string of t’s and f’s
      * @return A comma separated string of t’s and f’s
      */
+    @Override
     public String toString() {
         String result = "";
         for (int i=0; i<32; i++) {

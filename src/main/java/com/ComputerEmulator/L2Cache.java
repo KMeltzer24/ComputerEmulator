@@ -1,3 +1,5 @@
+package com.ComputerEmulator;
+
 /* 
  * Represents a L2 Cache with FIFO replacement
  * @author Kevin Meltzer
@@ -5,13 +7,13 @@
  */
 public class L2Cache {
     // An array of words representing an L2 cache
-    private static Word[] cache0 = new Word[8];
-    private static Word[] cache1 = new Word[8];
-    private static Word[] cache2 = new Word[8];
-    private static Word[] cache3 = new Word[8];
+    private final static Word[] cache0 = new Word[8];
+    private final static Word[] cache1 = new Word[8];
+    private final static Word[] cache2 = new Word[8];
+    private final static Word[] cache3 = new Word[8];
 
     // Word array representing the addresses of first item in each of the caches 
-    private static Word[] firstAddress = new Word[4];
+    private final static Word[] firstAddress = new Word[4];
 
     // Holds the index of the oldest cache
     private static int oldestCache = 0;
@@ -60,18 +62,10 @@ public class L2Cache {
         } else {                                                    // If address is not in a L2 cache, fill cache from main memory for 350 clock cycles,
             result.copy(copyBlock(address));                        // set result to data, and copy cache up to InstructionCache
             switch (oldestCache) {
-                case 0:
-                    InstructionCache.copyFromL2(cache3, firstAddress[3]);
-                    break;
-                case 1:
-                    InstructionCache.copyFromL2(cache0, firstAddress[0]);
-                    break;    
-                case 2:
-                    InstructionCache.copyFromL2(cache1, firstAddress[1]);
-                    break;
-                case 3:
-                    InstructionCache.copyFromL2(cache2, firstAddress[2]);
-                    break;
+                case 0 -> InstructionCache.copyFromL2(cache3, firstAddress[3]);
+                case 1 -> InstructionCache.copyFromL2(cache0, firstAddress[0]);
+                case 2 -> InstructionCache.copyFromL2(cache1, firstAddress[1]);
+                case 3 -> InstructionCache.copyFromL2(cache2, firstAddress[2]);
             }
         } 
         return result;
@@ -196,7 +190,7 @@ public class L2Cache {
             }
         }
         switch (oldestCache) {                  // Reads block of main memory into oldest cache, adds 350 clock cycles, and changes the oldest cache.
-            case 0:
+            case 0 -> {
                 firstAddress[0] = new Word();
                 firstAddress[0].copy(tempAddr);
                 while (i < 8) {
@@ -210,9 +204,9 @@ public class L2Cache {
                 result.copy(cache0[location]);
                 Processor.currentClockCycle += 350;
                 oldestCache++;
-                break;
+            }
 
-            case 1:
+            case 1 -> {
                 firstAddress[1] = new Word();
                 firstAddress[1].copy(tempAddr);
                 while (i < 8) {
@@ -226,9 +220,9 @@ public class L2Cache {
                 result.copy(cache1[location]);
                 Processor.currentClockCycle += 350;
                 oldestCache++;
-                break;
+            }
 
-            case 2:
+            case 2 -> {
                 firstAddress[2] = new Word();
                 firstAddress[2].copy(tempAddr);
                 while (i < 8) {
@@ -242,9 +236,9 @@ public class L2Cache {
                 result.copy(cache2[location]);
                 Processor.currentClockCycle += 350;
                 oldestCache++;
-                break;
+            }
 
-            case 3:
+            case 3 -> {
                 firstAddress[3] = new Word();
                 firstAddress[3].copy(tempAddr);
                 while (i < 8) {
@@ -258,8 +252,9 @@ public class L2Cache {
                 result.copy(cache3[location]);
                 Processor.currentClockCycle += 350;
                 oldestCache = 0;
-                break;
+            }
         }
+        // Reads block of main memory into oldest cache, adds 350 clock cycles, and changes the oldest cache.
         return result;
     }
 
@@ -272,29 +267,29 @@ public class L2Cache {
     public static Boolean cacheEqualTest(int[] arr, int cacheNum) {
         for (int i = 0; i < 8; i++) {
             switch (cacheNum) {                  
-                case 0:
+                case 0 -> {
                     if (arr[i] != cache0[i].getSigned()) {
                         return false;
                     }
-                    break;
+                }
     
-                case 1:
+                case 1 -> {
                     if (arr[i] != cache1[i].getSigned()) {
                         return false;
                     }
-                    break;
+                }
     
-                case 2:
+                case 2 -> {
                     if (arr[i] != cache2[i].getSigned()) {
                         return false;
                     }
-                    break;
+                }
     
-                case 3:
+                case 3 -> {
                     if (arr[i] != cache3[i].getSigned()) {
                         return false;
                     }
-                    break;
+                }
             }
         }
         return true;

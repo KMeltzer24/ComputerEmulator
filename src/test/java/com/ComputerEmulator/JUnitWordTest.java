@@ -1,3 +1,5 @@
+package com.ComputerEmulator;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -26,16 +28,16 @@ public class JUnitWordTest {
     // Tests getBit(int i)
     @Test
     public void JUnitWordGetBitTrueTest(){
-        Assert.assertEquals(wordAllTrue().getBit(0).getValue(),true);
+        Assert.assertTrue(wordAllTrue().getBit(0).getValue());
     }
     @Test
     public void JUnitWordGetBitFalseTest(){
-        Assert.assertEquals(wordAllFalse().getBit(0).getValue(),false);
+        Assert.assertFalse(wordAllFalse().getBit(0).getValue());
     }
     @Test
     public void JUnitWordGetBitMixTest(){
-        Assert.assertEquals(wordMix1().getBit(0).getValue(),true);
-        Assert.assertEquals(wordMix1().getBit(31).getValue(),false);
+        Assert.assertTrue(wordMix1().getBit(0).getValue());
+        Assert.assertFalse(wordMix1().getBit(31).getValue());
     }
 
 
@@ -44,21 +46,21 @@ public class JUnitWordTest {
     public void JUnitWordSetBitTrueTest(){
         Word testWord = wordAllTrue();
         testWord.setBit(0, new Bit(false));
-        Assert.assertEquals(testWord.getBit(0).getValue(),false);
+        Assert.assertFalse(testWord.getBit(0).getValue());
     }
     @Test
     public void JUnitWordSetBitFalseTest(){
         Word testWord = wordAllFalse();
         testWord.setBit(0, new Bit(true));
-        Assert.assertEquals(testWord.getBit(0).getValue(),true);
+        Assert.assertTrue(testWord.getBit(0).getValue());
     }
     @Test
     public void JUnitWordSetBitMixTest(){
         Word testWord = wordMix1();
         testWord.setBit(0, new Bit(false));
         testWord.setBit(31, new Bit(true));
-        Assert.assertEquals(testWord.getBit(0).getValue(),false);
-        Assert.assertEquals(testWord.getBit(31).getValue(),true);
+        Assert.assertFalse(testWord.getBit(0).getValue());
+        Assert.assertTrue(testWord.getBit(31).getValue());
     }
     
     
@@ -282,27 +284,27 @@ public class JUnitWordTest {
     @Test
     public void JUnitWordUnsignedZeroTest(){
         Word testWord = new Word(0);
-        Assert.assertEquals(testWord.getUnsigned(),0);
+        Assert.assertEquals(0,testWord.getUnsigned());
     } 
     @Test
     public void JUnitWordUnsignedPosLowTest(){
         Word testWord = new Word(10);
-        Assert.assertEquals(testWord.getUnsigned(),10);
+        Assert.assertEquals(10,testWord.getUnsigned());
     } 
     @Test
     public void JUnitWordUnsignedPosHighTest(){
         Word testWord = new Word(268435455);
-        Assert.assertEquals(testWord.getUnsigned(),268435455);
+        Assert.assertEquals(268435455,testWord.getUnsigned());
     } 
     @Test
     public void JUnitWordUnsignedNegLowTest(){
         Word testWord = new Word(-10);
-        Assert.assertEquals(testWord.getUnsigned(),10);
+        Assert.assertEquals(10,testWord.getUnsigned());
     } 
     @Test
     public void JUnitWordUnsignedNegHighTest(){
         Word testWord = new Word(-268435455);
-        Assert.assertEquals(testWord.getUnsigned(),268435455);
+        Assert.assertEquals(268435455,testWord.getUnsigned());
     } 
     
 
@@ -310,27 +312,27 @@ public class JUnitWordTest {
     @Test
     public void JUnitWordSignedZeroTest(){
         Word testWord = new Word(0);
-        Assert.assertEquals(testWord.getSigned(),0);
+        Assert.assertEquals(0,testWord.getSigned());
     } 
     @Test
     public void JUnitWordSignedPosLowTest(){
         Word testWord = new Word(10);
-        Assert.assertEquals(testWord.getSigned(),10);
+        Assert.assertEquals(10,testWord.getSigned());
     } 
     @Test
     public void JUnitWordSignedPosHighTest(){
         Word testWord = new Word(268435455);
-        Assert.assertEquals(testWord.getSigned(),268435455);
+        Assert.assertEquals(268435455,testWord.getSigned());
     } 
     @Test
     public void JUnitWordSignedNegLowTest(){
         Word testWord = new Word(-10);
-        Assert.assertEquals(testWord.getSigned(),-10);
+        Assert.assertEquals(-10,testWord.getSigned());
     } 
     @Test
     public void JUnitWordSignedNegHighTest(){
         Word testWord = new Word(-268435455);
-        Assert.assertEquals(testWord.getSigned(),-268435455);
+        Assert.assertEquals(-268435455,testWord.getSigned());
     } 
 
     // Tests copy(Word other);
@@ -338,25 +340,25 @@ public class JUnitWordTest {
     public void JUnitWordCopyTrueTest(){    
         Word testWord = new Word();
         testWord.copy(wordAllTrue());
-        Assert.assertEquals(testWord.toString(),wordAllTrue().toString());
+        Assert.assertEquals(wordAllTrue().toString(),testWord.toString());
     }
     @Test
     public void JUnitWordCopyFalseTest(){    
         Word testWord = new Word();
         testWord.copy(wordAllFalse());
-        Assert.assertEquals(testWord.toString(),wordAllFalse().toString());
+        Assert.assertEquals(wordAllFalse().toString(),testWord.toString());
     }
     @Test
     public void JUnitWordCopyMix1Test(){    
         Word testWord = new Word();
         testWord.copy(wordMix1());
-        Assert.assertEquals(testWord.toString(),wordMix1().toString());
+        Assert.assertEquals(wordMix1().toString(),testWord.toString());
     }
     @Test
     public void JUnitWordCopyMix2Test(){    
         Word testWord = new Word();
         testWord.copy(wordMix2());
-        Assert.assertEquals(testWord.toString(),wordMix2().toString());
+        Assert.assertEquals(wordMix2().toString(),testWord.toString());
     }  
     
     
@@ -428,37 +430,37 @@ public class JUnitWordTest {
     public void JUnitWordIncrementZeroTest(){
         Word testWord = new Word(0);
         testWord.increment();
-        Assert.assertEquals(testWord.getSigned(),1);
+        Assert.assertEquals(1,testWord.getSigned());
     } 
     @Test
     public void JUnitWordIncrementPosLowTest(){
         Word testWord = new Word(9);
         testWord.increment();
-        Assert.assertEquals(testWord.getSigned(),10);
+        Assert.assertEquals(10,testWord.getSigned());
     } 
     @Test
     public void JUnitWordIncrementPosHighTest(){
         Word testWord = new Word(268435455);
         testWord.increment();
-        Assert.assertEquals(testWord.getSigned(),268435456);
+        Assert.assertEquals(268435456,testWord.getSigned());
     }
     @Test
     public void JUnitWordIncrementNeg1Test(){
         Word testWord = new Word(-1);
         testWord.increment();
-        Assert.assertEquals(testWord.getSigned(),0);
+        Assert.assertEquals(0,testWord.getSigned());
     } 
     @Test
     public void JUnitWordIncrementNegLowTest(){
         Word testWord = new Word(-9);
         testWord.increment();
-        Assert.assertEquals(testWord.getSigned(),-8);
+        Assert.assertEquals(-8,testWord.getSigned());
     } 
     @Test
     public void JUnitWordIncrementNegHighTest(){
         Word testWord = new Word(-268435455);
         testWord.increment();
-        Assert.assertEquals(testWord.getSigned(),-268435454);
+        Assert.assertEquals(-268435454,testWord.getSigned());
     } 
 
     // Tests decrement()
@@ -466,36 +468,36 @@ public class JUnitWordTest {
     public void JUnitWordDecrementZeroTest(){
         Word testWord = new Word(0);
         testWord.decrement();
-        Assert.assertEquals(testWord.getSigned(),-1);
+        Assert.assertEquals(-1,testWord.getSigned());
     } 
     @Test
     public void JUnitWordDecrementPosLowTest(){
         Word testWord = new Word(9);
         testWord.decrement();
-        Assert.assertEquals(testWord.getSigned(),8);
+        Assert.assertEquals(8,testWord.getSigned());
     } 
     @Test
     public void JUnitWordDecrementPosHighTest(){
         Word testWord = new Word(268435455);
         testWord.decrement();
-        Assert.assertEquals(testWord.getSigned(),268435454);
+        Assert.assertEquals(268435454,testWord.getSigned());
     }
     @Test
     public void JUnitWordDecrementNeg1Test(){
         Word testWord = new Word(-1);
         testWord.decrement();
-        Assert.assertEquals(testWord.getSigned(),-2);
+        Assert.assertEquals(-2,testWord.getSigned());
     } 
     @Test
     public void JUnitWordDecrementNegLowTest(){
         Word testWord = new Word(-9);
         testWord.decrement();
-        Assert.assertEquals(testWord.getSigned(),-10);
+        Assert.assertEquals(-10,testWord.getSigned());
     } 
     @Test
     public void JUnitWordDecrementNegHighTest(){
         Word testWord = new Word(-268435455);
         testWord.decrement();
-        Assert.assertEquals(testWord.getSigned(),-268435456);
+        Assert.assertEquals(-268435456,testWord.getSigned());
     } 
 }

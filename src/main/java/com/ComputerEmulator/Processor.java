@@ -1,3 +1,5 @@
+package com.ComputerEmulator;
+
 /*
  * Represents the Processor which executes assembly commands
  * @author Kevin Meltzer
@@ -6,39 +8,39 @@
 public class Processor {                                        
 
     // An array of words representing the registers
-    private Word[] registers; 
+    private final Word[] registers; 
     // Word representing a program counter
-    private Word PC;
+    private final Word PC;
     // Word representing a stack pointer
-    private Word SP;
+    private final Word SP;
     // Word which holds the current instruction
-    private Word currentInstruction;
+    private final Word currentInstruction;
     // Bit which represents whether or not the run method should be halted
-    private Bit halted;
+    private final Bit halted;
     // Word which holds the current opcode
-    private Word opcode;
+    private final Word opcode;
     // Word which holds the destination register
-    private Word rd;
+    private final Word rd;
     // Word which holds the destination register's data
-    private Word rdData;
+    private final Word rdData;
     // Word which holds the function
-    private Word function;
+    private final Word function;
     // Word which holds the first source register's data
-    private Word rs1;
+    private final Word rs1;
     // Word which holds the second source register's data
-    private Word rs2;
+    private final Word rs2;
     // Word which holds the immediate value
-    private Word immediate;
+    private final Word immediate;
     // Word which holds the result of the execute method
-    private Word executionResult;
+    private final Word executionResult;
     // An alu to be used by the processor
-    private ALU alu;
+    private final ALU alu;
     // Word which is used to mask to get register values
-    private Word mask;
+    private final Word mask;
 
     // Bits used to set the value of other bits inside of the word
-    private Bit trueBit = new Bit(true);     
-    private Bit falseBit = new Bit(false); 
+    private final Bit trueBit = new Bit(true);     
+    private final Bit falseBit = new Bit(false); 
 
     // Int to count the number of clock cycles
     public static int currentClockCycle = 0;
@@ -555,8 +557,15 @@ public class Processor {
         }
         String op = "";                 // Gets function and sets op string to prepare for printing
         switch (function.getSigned()) {
-            case 7:op = "MULT ";break;case 8:op = "AND ";break;case 9:op = "OR" ;break;case 10:op = "XOR ";break;case 11:op = "NOT ";break;
-            case 12:op = "LSHIFT ";break;case 13:op = "RSHIFT ";break;case 14:op = "ADD ";break;case 15:op = "SUB ";break;
+            case 7 -> op = "MULT ";
+            case 8 -> op = "AND ";
+            case 9 -> op = "OR" ;
+            case 10 -> op = "XOR ";
+            case 11 -> op = "NOT ";
+            case 12 -> op = "LSHIFT ";
+            case 13 -> op = "RSHIFT ";
+            case 14 -> op = "ADD ";
+            case 15 -> op = "SUB ";
         }
         if (opcode.getBit(30).not().getValue()) {                                  // 1R - 01
             System.out.println("COPY " + immediate.getSigned() + " R" + rd.getUnsigned()
@@ -576,7 +585,12 @@ public class Processor {
     private void printResultsBranch() {
         String op = "";                 // Gets function and sets op string to prepare for printing
         switch (function.getSigned()) {
-            case 0:op = "EQ ";break;case 1:op = "NEQ ";break;case 2:op = "LT ";break;case 3:op = "GE ";break;case 4:op = "GT ";break;case 5:op = "LE ";break;
+            case 0 -> op = "EQ ";
+            case 1 -> op = "NEQ ";
+            case 2 -> op = "LT ";
+            case 3 -> op = "GE ";
+            case 4 -> op = "GT ";
+            case 5 -> op = "LE ";
         }
         if (opcode.getBit(30).or(opcode.getBit(31)).not().getValue()) {            // 0R - 00
             System.out.println("JUMPTO " + immediate.getSigned()                   
@@ -599,14 +613,19 @@ public class Processor {
     private void printResultsCall() {
         String op = "";                 // Gets function and sets op string to prepare for printing
         switch (function.getSigned()) {
-            case 0:op = "EQ ";break;case 1:op = "NEQ ";break;case 2:op = "LT ";break;case 3:op = "GE ";break;case 4:op = "GT ";break;case 5:op = "LE ";break;
+            case 0 -> op = "EQ ";
+            case 1 -> op = "NEQ ";
+            case 2 -> op = "LT ";
+            case 3 -> op = "GE ";
+            case 4 -> op = "GT ";
+            case 5 -> op = "LE ";
         }
         if (opcode.getBit(30).or(opcode.getBit(31)).not().getValue()) {            // 0R - 00
             System.out.println("CALL " + immediate.getSigned()
                 + "    input: " + immediate.getSigned() + " outputs: mem[" + SP.getUnsigned() + "] = " + MainMemory.read(SP).getSigned() + ", PC = " + PC.getUnsigned());
         } else if (opcode.getBit(30).not().getValue()) {                            // 1R - 01
             System.out.println("CALL R" + rd.getUnsigned() + " " + immediate.getSigned()
-                + "    inputs: " + rdData.getSigned() + ", " + immediate.getSigned() + " outputs: mem[" + SP.getUnsigned() + "] = " + MainMemory.read(SP).getSigned() + ", PC = " + PC.getUnsigned());;
+                + "    inputs: " + rdData.getSigned() + ", " + immediate.getSigned() + " outputs: mem[" + SP.getUnsigned() + "] = " + MainMemory.read(SP).getSigned() + ", PC = " + PC.getUnsigned());
         } else if (opcode.getBit(31).getValue()) {                           // 2R - 11
             if (alu.result.getSigned() != 0) {
                 System.out.println("CALL" + op + "R" + getRegisterInt(currentInstruction.rightShift(14).and(mask)) + " R" + rd.getUnsigned() + " " + immediate.getSigned()
@@ -632,8 +651,15 @@ public class Processor {
     private void printResultsPush() {
         String op = "";                 // Gets function and sets op string to prepare for printing
         switch (function.getSigned()) {
-            case 7:op = "MULT ";break;case 8:op = "AND ";break;case 9:op = "OR" ;break;case 10:op = "XOR ";break;case 11:op = "NOT ";break;
-            case 12:op = "LSHIFT ";break;case 13:op = "RSHIFT ";break;case 14:op = "ADD ";break;case 15:op = "SUB ";break;
+            case 7 -> op = "MULT ";
+            case 8 -> op = "AND ";
+            case 9 -> op = "OR" ;
+            case 10 -> op = "XOR ";
+            case 11 -> op = "NOT ";
+            case 12 -> op = "LSHIFT ";
+            case 13 -> op = "RSHIFT ";
+            case 14 -> op = "ADD ";
+            case 15 -> op = "SUB ";
         }
         if (opcode.getBit(30).not().getValue()) {                            // 1R - 01
             System.out.println("PUSH" + op + "R" + rd.getUnsigned() + " " + immediate.getSigned()
