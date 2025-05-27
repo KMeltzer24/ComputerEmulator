@@ -8,7 +8,11 @@ A Java-based implementation of a computer system emulator that simulates a proce
 1. Ensure you have JDK 17+ and Maven 3.6.0+ installed
 2. Clone this repository
 3. Navigate to the project directory
-4. Follow the Testing Instructions and Building and Running sections below
+4. Build the project:
+   ```bash
+   mvn clean compile
+   ```
+5. Follow the Testing Instructions section below to run tests
 
 ## Project Structure
 
@@ -67,40 +71,40 @@ ComputerEmulator/
 
 ## Testing Instructions
 
-**Required Development Environment:**
-- JDK 17 or later (required for compilation)
-- Maven 3.6.0 or later (required for building and testing)
-
-**Recommended Tools:**
-- An IDE with Java support (e.g., VSCode, IntelliJ IDEA, Eclipse) for easier development
-
-**Important Testing Information:**
-
-Some test files must be run individually due to their multithreaded nature. These files are:
-- `JUnitAssemblerTest.java`
-- `JUnitProcessorTest.java`
-- `JUnitCacheTest.java`
-
-For these specific test files, use the green "go" button next to each test in your IDE to run them one at a time. Running all tests in these files at once will cause failures and unreliable results.
-
-All other test files can be run together using standard test runners or `mvn test`.
-
-**Do not use any options or tools that run tests in parallel or all at once for the files listed above.**
-
-
-## Building and Running
-
-1. Build the project:
+**Running Tests:**
+1. For most test files:
    ```bash
-   mvn clean compile
+   mvn test -Dtest=\!JUnitAssemblerTest,\!JUnitProcessorTest,\!JUnitCacheTest
    ```
 
-2. Run the main program:
+2. For multithreaded tests (must be run individually):
+   - Using command line:
+     ```bash
+     # Run specific test methods
+     mvn test -Dtest=JUnitAssemblerTest#testMethodName
+     mvn test -Dtest=JUnitProcessorTest#testMethodName
+     mvn test -Dtest=JUnitCacheTest#testMethodName
+     ```
+   - Using IDE (recommended):
+     1. Open the project in your IDE
+     2. Navigate to the test file
+     3. Click the green "run" button next to individual test methods
+
+   Examples of specific test methods:
    ```bash
-   mvn exec:java -Dexec.mainClass="com.ComputerEmulator.Main"
+   # Assembler tests
+   mvn test "-Dtest=JUnitAssemblerTest#JUnitAssemblerFibonacciTest"
+   
+   # Cache tests
+   mvn test "-Dtest=JUnitCacheTest#JUnitCacheTest0"
+   mvn test "-Dtest=JUnitCacheTest#JUnitClockTest0"
+   
+   # Processor tests
+   mvn test "-Dtest=JUnitProcessorTest#JUnitProcessorAddTest"
+   mvn test "-Dtest=JUnitProcessorTest#JUnitProcessorMultTest"
    ```
 
-**Note:** For running tests, please refer to the Testing Instructions section above. Tests must be run individually for certain test files to ensure accurate results.
+**Important:** Do not run all tests in parallel or all at once for the multithreaded test files.
 
 ## Documentation
 
